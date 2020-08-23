@@ -345,3 +345,112 @@ passport.use(
 ***Notas:***
 
 - ***1° Si el usuario es autenticado correctamente es necesario eliminar el password para evitar huacos de seguridad.***
+
+### Implementando nuestro Sign-in
+
+- Importamos las librerías:
+
+```
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+```
+
+- Importamos nuestra **BasicStrategy**
+
+- verificamos que del cuerpo venga un atributo que se llame apiKeyToken este es el token que le vamos a pasar el Sign In para determinar que clase de permiso vamos a firmar en el JWT que vamos a devolver.
+
+```
+const { apiKeyToken } = req.body;
+
+// verificamos si no existe el token
+if(!apiKeyToken){
+  next(boom.unauthorized('apiKeyToken is required'));
+}
+```
+
+-  Cuando ya tengamos el token, podemos implementar un custom **Callback** se va ha encargar de ubicar a nuestro **usuario** en nuestro **request.user**, esto lo hacemos usando la funcionalidad **passport.authenticate**, esta función recibe dos parámetros el primero le indicamos que **estrategia** vamos a utilizar y como segundo parámetro una función **error frist** que recibe como parámetro el **error** y la **data** en el caso de este curso el **user**, en esta función vamos a tener todo la lógica de autenticación.
+
+```
+passport.authenticate('basic', function(error, user){
+  try {
+    if(error || !user){
+      next(boom.unauthorized());
+    }
+        
+  } catch (error) {
+    next(error)
+  }
+})(req, res, next);
+```
+
+***Como es un custom Callback, debemos hace un Clousure con la firma de la ruta.***
+
+- **Ejemplo completo:**
+
+```
+const express = require('express');
+const passport = require('passport');
+const boom = require('@hapi/boom');
+const jwt = require('jsonwebtoken');
+
+const ApiKeysService = require('../services/apiKeys');
+
+const { config } = require('../config');
+
+//Baisc
+require('../utils/auth/strategies/basic');
+
+function authApi(app){
+  const router = express.Router();
+
+  app.use('/api/auth', router);
+
+  const apiKeysService  = new ApiKeysService();
+
+  router.post('/sign-in', async (req, res, next) => {
+    const { apiKeyToken } = req.body;
+
+    if(!apiKeyToken){
+      next(boom.unauthorized('apiKeyToken is required'));
+    }
+
+    passport.authenticate('basic', function(error, user){
+      try {
+        if(error || !user){
+          next(boom.unauthorized());
+        }
+
+        req.login(user, {session: false}, async function(error){
+          if(error){
+            next(error)
+          }
+
+          const apiKey = await apiKeysService.getApiKey({ token: apiKeyToken })
+
+          if(!apiKey){
+            next(boom.unauthorized());
+          }
+
+          const { _id: id, name, email } = user;
+          const payload = {
+            sub: id,
+            name,
+            email,
+            scopes: apiKey.scopes
+          }
+
+          const token = jwt.sign(payload, config.authJtwSecret, {
+            expiresIn: '15m'
+          })
+
+          return res.status(200).json({ token, user: {id, name, email} })
+        })
+      } catch (error) {
+        next(error)
+      }
+      // como es un custom Callback, debemos hace un Clousure con la firma de la ruta.
+    })(req, res, next);
+  })
+}
+```
+
