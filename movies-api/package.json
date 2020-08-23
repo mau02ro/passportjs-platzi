@@ -18,6 +18,7 @@
   "dependencies": {
     "@hapi/boom": "^9.1.0",
     "@hapi/joi": "^17.1.1",
+    "bcrypt": "^5.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongodb": "^3.5.9"
@@ -28,7 +29,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
-    "mocha": "^8.0.1",
+    "mocha": "^8.1.1",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "proxyquire": "^2.1.3",
