@@ -14,7 +14,6 @@ function validate(data, schema) {
 
 function validationHandler(schema, check = 'body') {
   return function (req, res, next) {
-    // console.log(schema);
     const error = validate(req[check], schema);
     if (error) {
       next(boom.badRequest(error));

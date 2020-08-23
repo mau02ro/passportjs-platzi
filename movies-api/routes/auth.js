@@ -4,6 +4,10 @@ const boom = require('@hapi/boom');
 const jwt = require('jsonwebtoken');
 
 const ApiKeysService = require('../services/apiKeys');
+const UsersService = require('../services/users');
+
+const {validationHandler} = require('../utils/middleware/validationHandler');
+const { createUserSchema } = require('../utils/schema/users');
 
 const { config } = require('../config');
 
@@ -16,6 +20,7 @@ function authApi(app){
   app.use('/api/auth', router);
 
   const apiKeysService  = new ApiKeysService();
+  const usersService = new UsersService();
 
   router.post('/sign-in', async (req, res, next) => {
     const { apiKeyToken } = req.body;
@@ -60,6 +65,19 @@ function authApi(app){
       }
       // como es un custom Callback, debemos hace un Clousure con la firma de la ruta.
     })(req, res, next);
+  })
+
+  router.post('/sign-up', validationHandler(createUserSchema),async function(req, res , next) {
+    const { body: user } = req;
+    try {
+      const createUserId = await usersService.createUser({ user })
+      res.status(201).json({
+        data: createUserId,
+        message: 'user created'
+      })
+    } catch (error) {
+      next(error);
+    }
   })
 }
 
