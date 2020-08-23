@@ -15,8 +15,10 @@ app.use(express.json());
 
 //Rutas
 const moviesApi = require('./routes/movies');
+const userMoviesApi = require('./routes/userMovies');
 //usar rutas
 moviesApi(app);
+userMoviesApi(app);
 //Catch 404
 app.use(notFoundHandler);
 //middelwares error
