@@ -199,3 +199,63 @@ AUTH_JTW_SECRET=
 PUBLIC_API_KEY_TOKEN=
 ADMIN_API_KEY_TOKEN=
 ```
+
+### Implementacion de BasicStrategy
+
+- Importamos las librerías y módulos necesarios:
+
+```
+const passport = require('passport');
+const {BasicStrategy} = require('passport-http');
+```
+
+- Luego le creamos la instancia de nuestra **BasicStrategy** y se la pasamos el **middleware** de **passport**
+
+```
+passport.use( new BasicStrategy(async function(email, password, cb){
+}))
+```
+
+Esta instancia recibirá como parámetros los valores a autenticar y un callback.
+
+- **Ejemplo completo:**
+
+```
+const passport = require('passport');
+const {BasicStrategy} = require('passport-http');
+
+const boom = require('@hapi/boom');
+const bcrypt = require('bcrypt');
+
+const UserService = require('../../../services/users');
+
+passport.use( new BasicStrategy(async function(email, password, cb){
+  const userService = new UserService();
+  try {
+    const user = await userService.getUser({ email });
+
+    if(!user){
+      return cb(boom.unauthorized(), false);
+    }
+
+    let passwordValidation = await bcrypt.compare(password, user.password);
+    if(!passwordValidation){
+      return cb(boom.unauthorized(), false);
+    }
+
+    delete user.password;//importante
+
+    return cb(null, user);
+  } catch (error) {
+    return cb(error)
+  }
+}))
+```
+
+***Notas:***
+
+***1° Al momento de  retornar un error es una buena práctica no dar información detallada  sobre qué valor de autenticación es erróneo.***
+
+***2° Si el usuario es autenticado correctamente es necesario eliminar el password para evitar huacos de seguridad.***
+
+
