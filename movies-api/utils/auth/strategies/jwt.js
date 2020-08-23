@@ -9,7 +9,7 @@ const { config } = require('../../../config');
 passport.use(
   new Strategy({
     secretOrKey: config.authJtwSecret,
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()//esto indica que vamos a sacar el JWT del Header de la petición
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
   },
   await function(tokenPayload, cb){
     const userService = new UserService();

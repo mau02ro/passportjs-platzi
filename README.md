@@ -202,7 +202,7 @@ ADMIN_API_KEY_TOKEN=
 
 ### Implementacion de BasicStrategy
 
-- Importamos las librerías y módulos necesarios:
+- Importamos las librerías:
 
 ```
 const passport = require('passport');
@@ -254,60 +254,94 @@ passport.use( new BasicStrategy(async function(email, password, cb){
 
 ***Notas:***
 
-***1° Al momento de  retornar un error es una buena práctica no dar información detallada  sobre qué valor de autenticación es erróneo.***
+- ***1° Al momento de  retornar un error es una buena práctica no dar información detallada  sobre qué valor de autenticación es erróneo.***
 
-***2° Si el usuario es autenticado correctamente es necesario eliminar el password para evitar huacos de seguridad.***
+- ***2° Si el usuario es autenticado correctamente es necesario eliminar el password para evitar huacos de seguridad.***
 
 ### Implementación de Strategy y Extract JWT con Passport.js
+
+
+- Importamos las librerías:
 
 ```
 const passport = require('passport');
 const { Strategy, ExtractJwt } = require('passport-jwt');
+```
+
+**Nesecitamos el secret con que fue firmado nuestro JWT para que verifique que es complemente valido.**
+
+
+- Luego le creamos la instancia de nuestra **Strategy** y se la pasamos el **middleware** de **passport**
+
+Esta instancia recibe dos parámetros el primero es un objeto en el cual definimos el **secretOrKey** que es el **secret** con el cual firmamos el **jwt** y el **jwtFromRequest** el cual indica de donde vamos a obtener el **jwt**. Y como segundo parámetro recibe una función con la lógica de autenticación.
+
+```
+passport.use(
+  new Strategy({
+    secretOrKey: ,
+    jwtFromRequest: 
+  },
+  await function(tokenPayload, cb){
+    //lógica de autenticación.
+  }
+  )
+)
+```
+
+Si usamos **ExtractJwt** podemos utilizar su función **fromAuthHeaderAsBearerToken** ell cual indica que vamos a obtener le **jwt** del **header** de la petición.
+
+```
+new Strategy({
+    secretOrKey: ,
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+}, () => {})
+```
+
+La función con la lógica de autenticación recibe dos parámetros uno es el **payload** del **token** ya **decodificado** y el otro es un **callback**.
+
+```
+new Strategy({
+    secretOrKey: ,
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+}, (tokenPayload, cb) => {})
+```
+
+- **Ejemplo completo:**
+
+```
+const passport = require('passport');
+const { Strategy, ExtractJwt} = require('passport-jwt');
+
 const boom = require('@hapi/boom');
 
-/**
- * apartir de nuestro UserServices vamos usar el método para buscar al usuario
- * apartir de email que extraigamos del JWT
- */
-const UserSerivice = require('../../../services/users');
-// con nuestro config haremos saber a la estrategia con que secret fue firmado nuestro JWT
-// y para que verifique que es complemente valido.
-const { config } = require('../../../config/index');
+const UserService = require('../../../services/users');
+const { config } = require('../../../config');
 
-// definimos nuestra nueva Strategia
 passport.use(
-  /* recibe la firma con el que fue firmado el token 
-  y la especificación de donde sacamos el JWT
-  */ 
-  new Strategy(
-    {
-      secretOrKey: config.authJwtSecret,
-      // especificamos que lo sacamos del Header
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
-    },
-    // recibe el payload del token ya decodificado y el cb 
-    // por si encotramos un usuario o debemos de devolver un error.
-    async function (tokenPayload, cb) {
-      const userSerivice = new UserSerivice();
+  new Strategy({
+    secretOrKey: config.authJtwSecret,
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+  },
+  await function(tokenPayload, cb){
+    const userService = new UserService();
+    try {
+      const user = await userService.getUser({ email: tokenPayload.email });
 
-      try {
-        // buscamos al usuario en la Collection USERS con su atributo EMAIL
-        const user = await userSerivice.getUser({ email: tokenPayload.email });
-
-        if (!user) {
-          return cb(boom.unauthorized(), false);
-        }
-
-        delete user.password;
-        // si lo encontramos devolvemos la información del usuario 
-        // junto con los scopes o permisos que esté tiene.
-        cb(null, { ...user, scopes: tokenPayload.scopes });
-
-
-      } catch (err) {
-        cb(err);
+      if(!user){
+        return cb(boom.unauthorized(), false)
       }
+
+      delete user.passport;
+
+      cb(null, {...user, scope: tokenPayload.scopes})
+    } catch (error) {
+      return cb(error)
     }
+  }
   )
-);
+)
 ```
+
+***Notas:***
+
+- ***1° Si el usuario es autenticado correctamente es necesario eliminar el password para evitar huacos de seguridad.***
