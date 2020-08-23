@@ -12,7 +12,8 @@
     "start": "SET NODE_ENV=production & node index",
     "inspect": "SET DEBUG=express:*,app:* & nodemon --inspect index",
     "seed:movies": "SET DEBUG=app:* & node scripts/mongo/seedMovies.js",
-    "seed:users": "SET DEBUG=app:* & node scripts/mongo/seedUsers.js"
+    "seed:users": "SET DEBUG=app:* & node scripts/mongo/seedUsers.js",
+    "seed:api-keys": "SET DEBUG=app:* & node scripts/mongo/seedApiKeys.js"
   },
   "keywords": [],
   "author": "Mauro Hernández <mauroDeveloper@hotmail.com>",
