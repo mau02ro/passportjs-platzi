@@ -1,34 +1,3 @@
-/*const { moviesMock } = require('../utils/mocks/movies');
-
-class MoviesService {
-  async getMovies() {
-    const movies = await Promise.resolve(moviesMock);
-    return movies || [];
-  }
-
-  async getMovieId() {
-    const movie = await Promise.resolve(moviesMock[0]);
-    return movie || [];
-  }
-
-  async createMovieId() {
-    const createMovieId = await Promise.resolve(moviesMock[0].id);
-    return createMovieId;
-  }
-
-  async updateMovieId() {
-    const updateMovieId = await Promise.resolve(moviesMock[0].id);
-    return updateMovieId;
-  }
-
-  async deleteMovieId() {
-    const deleteMovieId = await Promise.resolve(moviesMock[0].id);
-    return deleteMovieId;
-  }
-}
-
-module.exports = MoviesService;*/
-
 const MongoLib = require('../lib/mongo');
 
 class MoviesService {

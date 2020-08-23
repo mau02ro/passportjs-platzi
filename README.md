@@ -160,3 +160,42 @@ Finalmente una de sus ventajas es que las cookies se pueden hacer seguras median
 - Si la información es medianamente sensible como por ejemplo: **nombres de usuario** o **algunos terminos que puedan identificar al usuario**, lo más recomendado es usar el **Session Storage**.
 
 - Finalmente si la información es muy sensible como **contraseñas** o **JSON Web Tokens**, lo más recomendado es almacenarlo en una cookie pero siempre teniendo en cuenta el flag **http-only**.
+
+## Passport.js
+
+**Passport.js** es un **middleware** para **express** que nos permite implementar estrategias de autenticación de una manera rápida y simple.
+
+## Configuración
+
+Necesitamos instalar  Passport.js y las dependecias nesesarias para implementar nuestras estrategias.
+
+```
+npm i passport jsonwebtoken passport-http passport-jwt
+```
+
+Tambien vamos a instalar la libreria **chalk**, que nos permite pintar colores en la terminal.
+
+```
+npm i -D chalk
+```
+
+Debemos definir las variables de entorno necesarias para aplicar nuestras estrategias:
+
+- Definimos las **password** **default** de nuestros usuarios
+```
+//USERS
+DEFAULT_ADMIN_PASSWORD=
+DEFAULT_USER_PASSWORD=
+```
+- Definimos cual va a ser nuestro **secret de JWT**, se recomienda usar la pagina [Keygen.io](https://keygen.io/#fakeLink)
+```
+//AUTH
+AUTH_JTW_SECRET=
+```
+
+- Definimos nuestras **api keys** que van a ser generadas aleatoriamente
+```
+//API KEYS 
+PUBLIC_API_KEY_TOKEN=
+ADMIN_API_KEY_TOKEN=
+```
