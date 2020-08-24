@@ -471,6 +471,37 @@ router.get(
   );
 ```
 
+## OAuth2.0 y OpenID Connect
 
+### ¿Qué es OAuth 2.0 y OpenID Connect?
 
+***OAuth 2.0*** es un estándar de la insdustria que nos permite implementar autorización.
 
+**Flujo de OAuth 2.0**:
+-	EL flujo comienza cuando la aplicación quiere hacer un Authorization Request
+-	Entonces tu como usuario debes permitirle a la aplicación acceder a tus recursos esto lo haces a través de un Authorization Grant.
+-	La aplicación con este Authorization Grant va al Authorization Server y verifica si estos datos son correctos.
+-	De ser correctos los datos este nos devolverá un Access Token este podría ser un Token cualquiera o un JWT.
+-	A partir de aquí la aplicación puede hacer cualquier petición al Resource Server.
+
+<img src="./img/oauth2.0.png" />
+
+**OpenID Connect** es una capa de autenticación que funciona sobre OAuth cón métodos ya construidos.
+
+### Cómo crear un proyecto en Google API para hacer autenticación con 0Auth 2.0
+
+Con el fin de poder usar Google como método de autenticación es necesario crear un nuevo proyecto dentro de la consola de desarrolladores de Google.
+
+- Nos dirigimos a [console.developers.google](https://console.developers.google.com) y nos autenticamos con nuestra cuenta de Google.
+
+- En la parte superior izquierda seleccionamos la organización que queremos usar (Debe haber una por defecto) y hacemos click en ***Create Project***.
+
+- Luego nos vamos al sidebar izquierdo y seleccionamos ***Credentials > Create credentials > OAuth client ID***.
+
+- Nos aseguramos de elegir *Web Application* como el tipo de aplicación.
+
+- Luego establecemos el nombre del cliente que en nuestro caso será *SSR Server*, el ***Authorized JavaScript origins***: *http://localhost:8000* y el ***Authorized redirect URIs*** *http://localhost:8000/auth/google-oauth/callback*. Cuando hagamos despliegue de nuestra aplicación lo ideal es crear otro cliente y remplazar las **URLs** por las **URLs** correspondientes de producción.
+
+- El ***Application Name*** del ***Consent Screen*** será *Platzi Videos*.
+
+- Al finalizar la creación copiamos el ***Client ID*** y ***Client secret*** que seran usados como *GOOGLE_CLIENT_ID* y *GOOGLE_CLIENT_SECRET* respectivamente.
