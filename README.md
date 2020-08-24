@@ -505,3 +505,29 @@ Con el fin de poder usar Google como método de autenticación es necesario crea
 - El ***Application Name*** del ***Consent Screen*** será *Platzi Videos*.
 
 - Al finalizar la creación copiamos el ***Client ID*** y ***Client secret*** que seran usados como *GOOGLE_CLIENT_ID* y *GOOGLE_CLIENT_SECRET* respectivamente.
+
+### Implementación de OAuth2.0 con Google
+
+***Nesecitamos  el Client ID y Client secret***[ver el parso anterior](#Cómo-crear-un-proyecto-en-Google-API-para-hacer-autenticación-con-0Auth-2.0)
+
+- Instalamos la libreria ***Passport OAuth***
+
+```
+npm i passport-oauth
+```
+
+- Creamos nuesto arcivo **oauth.js** para implementar nuestra **estrategy**
+
+```
+//oauth.js
+
+const passport = require('passport');
+const { OAuth2Strategy } = require('passport-oauth');
+
+//Estas URLs forman parte de todo el flujo de OAuth de Google
+const GOOGLE_AUTHORIZATION_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+const GOOGLE_TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token";
+const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
+```
+
+
