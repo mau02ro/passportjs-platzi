@@ -533,3 +533,74 @@ Cuando la cuenta ha sido aprobada, entonces procederemos a crear una aplicación
 - Hacemos click en **Create**, accedemos a los detalles de la app creada y en el tab de **Permissions**, y luego en **Additional permissions** marcamos **Request email address from users** y guardamos.
 
 - Nos vamos al tab de Keys and tokens y copiamos los Consumer API Keys que son los que usaremos como *TWITTER_CONSUMER_KEY* y *TWITTER_CONSUMER_SECRET* respectivamente.
+
+## Autenticación con Facebook
+
+A continuación veremos cómo podemos implementar la autenticación haciendo uso de la estrategia para Facebook. Es importante primero tener una cuenta de Facebook para desarrolladores: [developers.facebook.com](https://developers.facebook.com/) y crear una app/project como lo hemos hecho anteriormente para Google y Twitter. Podemos seguir las instrucciones aquí: [developers.facebook.com/docs/apps](https://developers.facebook.com/docs/apps), para obtener nuestros *FACEBOOK_CLIENT_ID* y *FACEBOOK_CLIENT_SECRET* respectivamente.
+
+- Lo primero es instalar nuestras dependencias
+
+```
+npm install passport-facebook
+```
+
+- Luego creamos una nueva **estrategia** llamada **facebook** dentro de *utils/auth/strategies/facebook.js*:
+
+const passport = require('passport');
+const { Strategy: FacebookStrategy } = require('passport-facebook');
+
+const { config } = require("../../../config/index");
+
+```
+passport.use(new FacebookStrategy({
+    clientID: config.facebookClientId,
+    clientSecret: config.facebookClientSecret,
+    callbackURL: "/auth/facebook/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+      const { data, status } = await axios({
+        url: `${config.apiUrl}/api/auth/sign-provider`,
+        method: "post",
+        data: {
+            name: profile.name,
+            email: profile.email,
+            password: profile.id,
+            apiKeyToken: config.apiKeyToken
+        }
+      });
+
+      if (!data || status !== 200) {
+        return cb(boom.unauthorized(), false);
+      }
+
+      return cb(null, data);
+  }
+));
+```
+
+- Teniendo nuestra estrategia de Facebook ya podemos agregar las dos nuevas rutas de autenticación.
+
+```
+app.get("/auth/facebook", passport.authenticate("facebook"), {
+  scope: ["email", "profile", "openid"]
+});
+
+app.get(
+  "/auth/facebook/callback",
+  passport.authenticate("facebook", { session: false }),
+  function(req, res, next) {
+    if (!req.user) {
+      next(boom.unauthorized());
+    }
+
+    const { token, ...user } = req.user;
+
+    res.cookie("token", token, {
+      httpOnly: !config.dev,
+      secure: !config.dev
+    });
+
+    res.status(200).json(user);
+  }
+);
+```
