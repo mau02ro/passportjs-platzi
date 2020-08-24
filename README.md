@@ -529,5 +529,28 @@ const GOOGLE_AUTHORIZATION_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token";
 const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
 ```
+## Autentición con Twitter
 
+### Cómo crear una cuenta de desarrollador con Twitter
 
+Con el fin de poder usar Twitter como método de autenticación es necesario crear una cuenta de desarrollador de Twitter. Es necesario postularse para que la cuenta de desarrollador pueda ser utilizada y suele tomar hasta 24 horas de aprobación.
+
+Para aplicar a la cuenta es necesario hacer dirigirse a [developer.twitter.com](https://developer.twitter.com/en/apply-for-access.html) y hacer click en el botón *Apply for a developer account*.
+
+Cuando la cuenta ha sido aprobada, entonces procederemos a crear una aplicación para usarla en nuestro método de autenticación, para ellos debemos:
+
+- Nos dirigimos a la lista de nuestras aplicaciones en https://developer.twitter.com/en/apps
+
+- Allí creamos una nueva app haciendo click en el botón Create an app.
+
+- Llenamos los correspondientes campos como **App Name** y **Website URL**.
+
+- Las URLs de **Terms of Service URL y Privacy policy** URL son necesarias para poder solicitar el email del usuario.
+
+- Como callback URL podemos usar http://localhost:8000/auth/twitter/callback. Lo ideal es que cuando salimos a producción creamos una aplicación diferente y esta vez usaremos la URL de producción.
+
+- Marcamos como **Enabled** que nuestra app va a ser usada para **Sign in with Twitter**.
+
+- Hacemos click en **Create**, accedemos a los detalles de la app creada y en el tab de **Permissions**, y luego en **Additional permissions** marcamos **Request email address from users** y guardamos.
+
+- Nos vamos al tab de Keys and tokens y copiamos los Consumer API Keys que son los que usaremos como *TWITTER_CONSUMER_KEY* y *TWITTER_CONSUMER_SECRET* respectivamente.
