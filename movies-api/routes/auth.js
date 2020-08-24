@@ -108,9 +108,11 @@ function authApi(app){
           email,
           scopes: apiKey.scopes
         };
+
         const token = jwt.sign(payload, config.authJtwSecret, {
           expiresIn: '15m'
         });
+
         return res.status(200).json({ token, user: { id, name, email } });
       } catch (error) {
         next(error);
