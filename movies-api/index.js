@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 
 const {
   logError,
@@ -12,6 +13,7 @@ const { config } = require('./config/index');
 
 ///middelwares
 app.use(express.json());
+app.use(helmet());
 
 //Rutas
 const moviesApi = require('./routes/movies');

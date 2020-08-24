@@ -3,6 +3,8 @@ const passport = require("passport");
 const boom = require("@hapi/boom");
 const cookieParser = require("cookie-parser");
 const axios = require("axios");
+const helmet = require('helmet');
+
 //twitter
 const session = require("express-session");
 
@@ -12,6 +14,8 @@ const app = express();
 
 // body parser
 app.use(express.json());
+app.use(helmet());
+
 app.use(cookieParser());
 app.use(session({ secret: config.sessionSecret }));
 app.use(passport.initialize());
