@@ -454,3 +454,23 @@ function authApi(app){
 }
 ```
 
+### Protegiendo nuestras rutas con Passport.js
+
+Para proteger nuestras rutas vamos a agegar el **middleware** **passport.authenticate** a cada una de nuestras rutas.
+
+Es importante tener definida la estrategia de **JWT**.
+
+```
+const passport = require('passport');
+require('strategies/jwt');
+
+router.get(
+    '/',
+    passport.authenticate('jwt', { session: false }),
+    () => {}
+  );
+```
+
+
+
+

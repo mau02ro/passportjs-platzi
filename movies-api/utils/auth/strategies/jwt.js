@@ -11,7 +11,7 @@ passport.use(
     secretOrKey: config.authJtwSecret,
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
   },
-  await function(tokenPayload, cb){
+  async function(tokenPayload, cb){
     const userService = new UserService();
     try {
       const user = await userService.getUser({ email: tokenPayload.email });
